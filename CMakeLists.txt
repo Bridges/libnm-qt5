@@ -75,7 +75,7 @@ set(NetworkManagerQt_HEADERS
     wirelessdevice.h
     wirelessnetwork.h
     generic-types.h
-    NetworkManagerQt-export.h
+    NetworkManagerQt5-export.h
 )
 
 set(NetworkManagerQt_PRIVATE_HEADERS
