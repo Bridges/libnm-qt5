@@ -28,7 +28,7 @@
     This file contains macros needed for exporting/importing symbols
 */
 
-#include <QtCore/QtGlobal>
+#include <QtGlobal>
 
 #ifndef NETWORKMANAGERQT_EXPORT
 # if defined(MAKE_NMQT_LIB)

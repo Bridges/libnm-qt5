@@ -45,7 +45,7 @@ public:
         }                                                                          \
         inline bool exists() const                                                 \
         {                                                                          \
-            return _nm_static_##NAME != 0;                                          \
+        return _nm_static_##NAME.load() != nullptr;                                          \
         }                                                                          \
         inline operator TYPE*()                                                    \
         {                                                                          \
@@ -53,20 +53,20 @@ public:
         }                                                                          \
         inline TYPE *operator->()                                                  \
         {                                                                          \
-            if (!_nm_static_##NAME) {                                               \
+        if (!_nm_static_##NAME.load()) {                                               \
                 if (isDestroyed()) {                                               \
                     qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
                            "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
                 }                                                                  \
                 TYPE *x = new TYPE ARGS;                                           \
                 if (!_nm_static_##NAME.testAndSetOrdered(0, x)                      \
-                        && _nm_static_##NAME != x ) {                                   \
+                    && _nm_static_##NAME.load() != x ) {                                   \
                     delete x;                                                      \
                 } else {                                                           \
                     static NmCleanUpGlobalStatic cleanUpObject = { destroy };       \
                 }                                                                  \
             }                                                                      \
-            return _nm_static_##NAME;                                               \
+            return _nm_static_##NAME.load();                                               \
         }                                                                          \
         inline TYPE &operator*()                                                   \
         {                                                                          \
@@ -75,8 +75,8 @@ public:
         static void destroy()                                                      \
         {                                                                          \
             _nm_static_##NAME##_destroyed = true;                                   \
-            TYPE *x = _nm_static_##NAME;                                            \
-            _nm_static_##NAME = 0;                                                  \
+            TYPE *x = _nm_static_##NAME.load();                                            \
+            _nm_static_##NAME.store(nullptr);                                                  \
             delete x;                                                              \
         }                                                                          \
     } NAME;
