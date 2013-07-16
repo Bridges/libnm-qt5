@@ -21,7 +21,7 @@
 #ifndef NMQT_SETTINGS_802_3_ETHERNET_H
 #define NMQT_SETTINGS_802_3_ETHERNET_H
 
-#include "../NetworkManagerQt-export.h"
+#include "../NetworkManagerQt5-export.h"
 #include "setting.h"
 
 #include <QtCore/QStringList>

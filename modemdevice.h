@@ -26,7 +26,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <ModemManagerQt/modemgsmnetworkinterface.h>
 
 #include "device.h"
-#include "NetworkManagerQt-export.h"
+#include "NetworkManagerQt5-export.h"
 
 namespace NetworkManager
 {

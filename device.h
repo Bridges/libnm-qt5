@@ -27,7 +27,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QtGlobal>
 #include <QSharedPointer>
 
-#include "NetworkManagerQt-export.h"
+#include "NetworkManagerQt5-export.h"
 #include "generic-types.h"
 #include "ipconfig.h"
 #include "dhcp4config.h"

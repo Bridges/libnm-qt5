@@ -23,7 +23,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_WIMAXDEVICE_H
 #define NMQT_WIMAXDEVICE_H
 
-#include "NetworkManagerQt-export.h"
+#include "NetworkManagerQt5-export.h"
 
 #include "device.h"
 #include "wimaxnsp.h"

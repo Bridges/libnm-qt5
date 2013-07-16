@@ -24,7 +24,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "generic-types.h"
 
-#include "NetworkManagerQt-export.h"
+#include "NetworkManagerQt5-export.h"
 
 #include <QtCore/QStringList>
 #include <QSharedPointer>
