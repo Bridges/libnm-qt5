@@ -40,6 +40,7 @@ template<typename T>
 T* get(const QBasicAtomicPointer<T> &t)
 {
 #if QT_VERSION > 0x50000
+    return t.load();
 #else
     return t;
 #endif
@@ -48,7 +49,11 @@ T* get(const QBasicAtomicPointer<T> &t)
 template<typename T>
 void store(QBasicAtomicPointer<T> &t, T *val)
 {
+#if QT_VERSION > 0x50000
+    t.store(val);
+#else
     t = val;
+#endif
 }
 
 
