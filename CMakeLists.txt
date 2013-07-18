@@ -1,25 +1,39 @@
 cmake_minimum_required(VERSION 2.8.8)
 
-project(libNetworkManagerQt5)
-set(CMAKE_AUTOMOC ON)
-
+option(USE_QT5 "Using Qt5" OFF)
 set(VERSION 0.9.0)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_MODULE_PATH})
 
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of library directory name (32/64)" )
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Network REQUIRED)
+find_package(PkgConfig)
+if(USE_QT5)
+    project(lib${libraryName})
+    find_package(Qt5Core REQUIRED)
+    find_package(Qt5DBus REQUIRED)
+
+    set(CMAKE_AUTOMOC ON)
+    add_definitions(-std=c++11)
+    set(libraryName NetworkManagerQt5)
+    pkg_check_modules(LIBMODEMMANAGERQT REQUIRED ModemManagerQt5)
+    if(NOT LIBMODEMMANAGERQT_FOUND)
+        message(FATAL_ERROR "ERROR: libModemManagerQt5 not found")
+    endif(NOT LIBMODEMMANAGERQT_FOUND)
+else()
+    project(libNetworkManagerQt)
+    find_package(Qt4 REQUIRED QtCore QtNetwork)
+    add_definitions(${QT_DEFINITIONS})
+    set(libraryName NetworkManagerQt)
+    pkg_check_modules(LIBMODEMMANAGERQT REQUIRED ModemManagerQt)
+    if(NOT LIBMODEMMANAGERQT_FOUND)
+        message(FATAL_ERROR "ERROR: libModemManagerQt not found")
+    endif(NOT LIBMODEMMANAGERQT_FOUND)
+endif()
+
 find_package(NetworkManager 0.9.8.0 REQUIRED)
-add_definitions(-std=c++11)
 
-pkg_check_modules(LIBMODEMMANAGERQT REQUIRED ModemManagerQt5)
-if (NOT LIBMODEMMANAGERQT_FOUND)
-    message(FATAL_ERROR "ERROR: libModemManagerQt5 not found")
-endif (NOT LIBMODEMMANAGERQT_FOUND)
-
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${QT_INCLUDES}
                     ${LIBMODEMMANAGERQT_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH})
 
 link_directories(${LIBMODEMMANAGERQT_LIBRARY_DIRS} ${CMAKE_LIBRARY_PATH})
@@ -75,7 +89,7 @@ set(NetworkManagerQt_HEADERS
     wirelessdevice.h
     wirelessnetwork.h
     generic-types.h
-    NetworkManagerQt5-export.h
+    NetworkManagerQt-export.h
 )
 
 set(NetworkManagerQt_PRIVATE_HEADERS
@@ -202,33 +216,46 @@ set(CONNECTIONS_SETTINGS_HEADERS
     settings/wimaxsetting.h
     )
 
+if(NOT USE_QT5)
+    message(STATUS "Wrapping moc")
+    qt4_wrap_cpp(NetworkManagerQt_MOC ${NetworkManagerQt_PRIVATE_HEADERS})
+    qt4_automoc(${NetworkManagerQt_PART_SRCS})
+    qt4_automoc(${DBUS_INTERFACE_SRCS})
+endif()
 
-add_library(NetworkManagerQt5 SHARED ${NetworkManagerQt_PART_SRCS} ${DBUS_INTERFACE_SRCS} ${CONNECTIONS_SETTINGS_SRCS} ${NetworkManagerQt_MOC} )
-qt5_use_modules(NetworkManagerQt5 Core DBus Network)
+add_library(${libraryName} SHARED ${NetworkManagerQt_PART_SRCS} ${DBUS_INTERFACE_SRCS} ${CONNECTIONS_SETTINGS_SRCS} ${NetworkManagerQt_MOC} )
+if(USE_QT5)
+    qt5_use_modules(${libraryName} Core DBus Network)
+endif()
 
 # TODO: dlopen libModemManagerQt to make it a runtime dependency instead of compile
 # time dependency.
-target_link_libraries(NetworkManagerQt5 ModemManagerQt5 ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTNETWORK_LIBRARY})
-install(TARGETS NetworkManagerQt5 DESTINATION lib${LIB_SUFFIX})
+if(USE_QT5)
+    target_link_libraries(${libraryName} ModemManagerQt5)
+else()
+    target_link_libraries(${libraryName} ModemManagerQt ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTNETWORK_LIBRARY})
+endif()
+
+install(TARGETS ${libraryName} DESTINATION lib${LIB_SUFFIX})
 
 install( FILES
    ${NetworkManagerQt_HEADERS}
    DESTINATION
-   include/NetworkManagerQt5 COMPONENT Devel)
+   include/${libraryName} COMPONENT Devel)
 
 install( FILES
    ${CONNECTIONS_SETTINGS_HEADERS}
    DESTINATION
-   include/NetworkManagerQt5/settings COMPONENT Devel)
+   include/${libraryName}/settings COMPONENT Devel)
 
-set_property(TARGET NetworkManagerQt5 PROPERTY COMPILE_DEFINITIONS MAKE_NMQT_LIB)
-set_property(TARGET NetworkManagerQt5 PROPERTY VERSION ${VERSION})
-set_property(TARGET NetworkManagerQt5 PROPERTY SOVERSION 0)
+set_property(TARGET ${libraryName} PROPERTY COMPILE_DEFINITIONS MAKE_NMQT_LIB)
+set_property(TARGET ${libraryName} PROPERTY VERSION ${VERSION})
+set_property(TARGET ${libraryName} PROPERTY SOVERSION 0)
 
-configure_file(${CMAKE_SOURCE_DIR}/NetworkManagerQt5.pc.cmake ${CMAKE_BINARY_DIR}/NetworkManagerQt5.pc @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/NetworkManagerQt5.pc DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig/")
+configure_file(${CMAKE_SOURCE_DIR}/${libraryName}.pc.cmake ${CMAKE_BINARY_DIR}/${libraryName}.pc @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/${libraryName}.pc DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig/")
 message(STATUS "Writing pkg-config file...")
-configure_file(${CMAKE_SOURCE_DIR}/NetworkManagerQt5.pc.cmake ${CMAKE_BINARY_DIR}/NetworkManagerQt5.pc @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/NetworkManagerQt5.pc DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig/")
+configure_file(${CMAKE_SOURCE_DIR}/${libraryName}.pc.cmake ${CMAKE_BINARY_DIR}/${libraryName}.pc @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/${libraryName}.pc DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig/")
 
 add_subdirectory(include)

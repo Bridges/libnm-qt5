@@ -24,7 +24,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "device.h"
 
-#include "NetworkManagerQt5-export.h"
+#include "NetworkManagerQt-export.h"
 
 #include <QDBusObjectPath>
 

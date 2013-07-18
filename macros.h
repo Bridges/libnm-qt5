@@ -21,6 +21,9 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_MACROS_H
 #define NMQT_MACROS_H
 
+#include <QtGlobal>
+#include <QAtomicPointer>
+
 # define NM_GLOBAL_STATIC_STRUCT_NAME(NAME)
 typedef void (*NmCleanUpFunction)();
 class NmCleanUpGlobalStatic
@@ -32,6 +35,22 @@ public:
         func();
     }
 };
+
+template<typename T>
+T* get(const QBasicAtomicPointer<T> &t)
+{
+#if QT_VERSION > 0x50000
+#else
+    return t;
+#endif
+}
+
+template<typename T>
+void store(QBasicAtomicPointer<T> &t, T *val)
+{
+    t = val;
+}
+
 
 #define NM_GLOBAL_STATIC(TYPE, NAME) NM_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 #define NM_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
@@ -45,7 +64,7 @@ public:
         }                                                                          \
         inline bool exists() const                                                 \
         {                                                                          \
-        return _nm_static_##NAME.load() != nullptr;                                          \
+            return get<TYPE>(_nm_static_##NAME) !=0;                                             \
         }                                                                          \
         inline operator TYPE*()                                                    \
         {                                                                          \
@@ -53,20 +72,20 @@ public:
         }                                                                          \
         inline TYPE *operator->()                                                  \
         {                                                                          \
-        if (!_nm_static_##NAME.load()) {                                               \
+        if (!get(_nm_static_##NAME)) {                                               \
                 if (isDestroyed()) {                                               \
                     qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
                            "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
                 }                                                                  \
                 TYPE *x = new TYPE ARGS;                                           \
                 if (!_nm_static_##NAME.testAndSetOrdered(0, x)                      \
-                    && _nm_static_##NAME.load() != x ) {                                   \
+                    && get(_nm_static_##NAME) != x ) {                                   \
                     delete x;                                                      \
                 } else {                                                           \
                     static NmCleanUpGlobalStatic cleanUpObject = { destroy };       \
                 }                                                                  \
             }                                                                      \
-            return _nm_static_##NAME.load();                                               \
+            return get(_nm_static_##NAME);                                               \
         }                                                                          \
         inline TYPE &operator*()                                                   \
         {                                                                          \
@@ -75,8 +94,8 @@ public:
         static void destroy()                                                      \
         {                                                                          \
             _nm_static_##NAME##_destroyed = true;                                   \
-            TYPE *x = _nm_static_##NAME.load();                                            \
-            _nm_static_##NAME.store(nullptr);                                                  \
+            TYPE *x = get(_nm_static_##NAME);                                            \
+            store(_nm_static_##NAME, static_cast<TYPE*>(0));                                                  \
             delete x;                                                              \
         }                                                                          \
     } NAME;

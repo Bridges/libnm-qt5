@@ -22,7 +22,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_NETWORKMANAGER_H
 #define NMQT_NETWORKMANAGER_H
 
-#include "NetworkManagerQt5-export.h"
+#include "NetworkManagerQt-export.h"
 
 #include <QtCore/QtGlobal>
 #include <QtDBus/QtDBus>

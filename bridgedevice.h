@@ -22,7 +22,7 @@
 #define NMQT_BRIDGE_DEVICE_H
 
 #include "device.h"
-#include "NetworkManagerQt5-export.h"
+#include "NetworkManagerQt-export.h"
 
 namespace NetworkManager {
 

@@ -21,7 +21,7 @@
 #ifndef NMQT_SETTINGS_BOND_H
 #define NMQT_SETTINGS_BOND_H
 
-#include "../NetworkManagerQt5-export.h"
+#include "../NetworkManagerQt-export.h"
 #include "setting.h"
 
 #include <QtCore/QString>

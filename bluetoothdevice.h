@@ -25,7 +25,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_BLUETOOTH_DEVICE_H
 #define NMQT_BLUETOOTH_DEVICE_H
 
-#include "NetworkManagerQt5-export.h"
+#include "NetworkManagerQt-export.h"
 
 namespace NetworkManager {
 

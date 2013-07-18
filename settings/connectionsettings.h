@@ -23,7 +23,7 @@
 #ifndef NMQT_SETTINGS_CONNECTION_SETTINGS_H
 #define NMQT_SETTINGS_CONNECTION_SETTINGS_H
 
-#include "../NetworkManagerQt5-export.h"
+#include "../NetworkManagerQt-export.h"
 #include "setting.h"
 
 #include <NetworkManager.h>

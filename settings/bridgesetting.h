@@ -21,7 +21,7 @@
 #ifndef NMQT_SETTINGS_BRIDGE_H
 #define NMQT_SETTINGS_BRIDGE_H
 
-#include "../NetworkManagerQt5-export.h"
+#include "../NetworkManagerQt-export.h"
 #include "setting.h"
 
 #include <QtCore/QString>

@@ -22,7 +22,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_WIREDDEVICE_H
 #define NMQT_WIREDDEVICE_H
 
-#include "NetworkManagerQt5-export.h"
+#include "NetworkManagerQt-export.h"
 
 #include "device.h"
 
