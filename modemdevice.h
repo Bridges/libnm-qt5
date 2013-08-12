@@ -22,8 +22,13 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NMQT_MODEMDEVICE_H
 #define NMQT_MODEMDEVICE_H
 
+#ifdef USE_QT5
+#include <ModemManagerQt5/modemgsmcardinterface.h>
+#include <ModemManagerQt5/modemgsmnetworkinterface.h>
+#else
 #include <ModemManagerQt/modemgsmcardinterface.h>
 #include <ModemManagerQt/modemgsmnetworkinterface.h>
+#endif
 
 #include "device.h"
 #include "NetworkManagerQt-export.h"

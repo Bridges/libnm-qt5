@@ -23,7 +23,11 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include "modemdevice.h"
 #include "modemdevice_p.h"
 
+#ifdef USE_QT5
+#include <ModemManagerQt5/manager.h>
+#else
 #include <ModemManagerQt/manager.h>
+#endif
 
 #include "manager_p.h"
 
